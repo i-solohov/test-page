@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Тестовая форма — Найди баги!</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .success-message {
+      color: green;
+      margin-top: 15px;
+      display: none;
+    }
+    /* Баг: на мобильных устройствах поле "Комментарий" вылезает за границы */
+    @media (max-width: 400px) {
+      textarea {
+        width: 110%; /* Намеренная ошибка */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Форма обратной связи</h2>
+    <form id="feedbackForm">
+      <label for="name">Имя *</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="email">Email *</label>
+      <!-- Баг: нет валидации email на фронтенде -->
+      <input type="text" id="email" name="email" required />
+
+      <label for="age">Возраст</label>
+      <!-- Баг: принимает отрицательные числа и буквы -->
+      <input type="text" id="age" name="age" />
+
+      <label for="country">Страна</label>
+      <select id="country" name="country">
+        <option value="">Выберите...</option>
+        <option value="ru">Россия</option>
+        <option value="us">США</option>
+        <option value="de">Германия</option>
+      </select>
+
+      <label for="message">Комментарий *</label>
+      <!-- Баг: нет ограничения на длину -->
+      <textarea id="message" name="message" rows="4" required></textarea>
+
+      <label>
+        <input type="checkbox" id="agree" name="agree" />
+        Я согласен с условиями обработки персональных данных
+      </label>
+      <!-- Баг: отправка возможна даже без согласия -->
+
+      <button type="submit">Отправить</button>
+    </form>
+
+    <div class="success-message" id="successMsg">
+      Спасибо! Ваше сообщение отправлено.
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Баг: сообщение об успехе появляется даже при пустом имени или email
+      document.getElementById('successMsg').style.display = 'block';
+
+      // Баг: данные не отправляются на сервер, но пользователь думает, что всё ок
+
+      // Баг: уязвимость к XSS (если ввести <script>alert(1)</script> в имя или комментарий)
+      const name = document.getElementById('name').value;
+      if (name) {
+        console.log('Имя:', name);
+        // Никакой санитизации — потенциальный XSS при отображении имени позже
+      }
+    });
+  </script>
+</body>
+</html>
