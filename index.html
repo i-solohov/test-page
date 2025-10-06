@@ -103,8 +103,6 @@
       document.getElementById('successMsg').style.display = 'block';
 
       // Баг: данные не отправляются на сервер, но пользователь думает, что всё ок
-
-      // Баг: уязвимость к XSS (если ввести <script>alert(1)</script> в имя или комментарий)
       const name = document.getElementById('name').value;
       if (name) {
         console.log('Имя:', name);
